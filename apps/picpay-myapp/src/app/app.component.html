@@ -1,0 +1,32 @@
+<header class="flex">
+  <img
+    alt="Nx logo"
+    width="75"
+    src="https://nx.dev/assets/images/nx-logo-white.svg"
+  />
+  <h1>Welcome to {{ title }}!</h1>
+</header>
+<main>
+  <h2>Feature</h2>
+  <details>
+    <summary>{{(feature_qrcode_bills | async) | json}}</summary>
+  </details>
+
+  <details>
+    <summary>{{(feature_cpf_in_use_dialog | async) | json}}</summary>
+  </details>
+
+  {{(isEnabled | async) | json}}
+
+  <h2>Features</h2>
+  <details *ngFor="let item of features | async">
+    <summary>{{item.name}} - {{item.value}} </summary>
+    <pre>
+# Tipo
+{{item.type}}
+
+# Valor
+{{item.value}}
+    </pre>
+  </details>
+</main>
