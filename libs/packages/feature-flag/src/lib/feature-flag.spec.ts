@@ -6,7 +6,7 @@ import * as fetchMock from 'fetch-mock';
 jest.useFakeTimers();
 
 describe('Feature Flag', () => {
-    const url = 'https://gateway.service.ppay.me/flags/features';
+    const url = 'https://localhost:1500/flags/features';
     const initConfig = { url };
     const mockFeature = [
         { name: 'feature_boolean', type: 'B', value: 'true' },

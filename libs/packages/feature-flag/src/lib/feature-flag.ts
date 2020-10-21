@@ -4,7 +4,7 @@ import { Observable, Observer, Subject, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 class FeatureFlagClass {
-  features: Observable<Feature[]>;
+  public features: Observable<Feature[]>;
   private config: FFConfig;
   public data$: Subject<Feature[]> = new Subject();
 
