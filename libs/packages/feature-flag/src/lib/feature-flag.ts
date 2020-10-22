@@ -4,8 +4,8 @@ import { Observable, Subject, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 class FeatureFlagClass {
-  private config: FFConfig;
-  private subject = new Subject<Feature[]>();
+  config: FFConfig;
+  subject = new Subject<Feature[]>();
 
   init(config: FFConfig) {
     if (!config.url) {
@@ -26,10 +26,10 @@ class FeatureFlagClass {
     });
   }
 
-  fetchRequest() {
+  fetchRequest(): Promise<any> {
     const apiUrl = this.config.url;
 
-    fetch(apiUrl, {
+    return fetch(apiUrl, {
       method: 'post',
       body: JSON.stringify({}),
     })
@@ -37,6 +37,8 @@ class FeatureFlagClass {
     .then((response: Response) => response.json())
     .then((response: Feature[]) => {
       this.sendFeatures(response);
+
+      return response;
     })
     .catch((err) => this.subject.error(err));
   }
@@ -62,7 +64,7 @@ class FeatureFlagClass {
     )
   }
 
-  isFeatureEnabled(featureName: string): Observable<Feature> {
+  isFeatureEnabled(featureName: string): Observable<Feature | boolean> {
     return this.subject.pipe(
       map(items => {
         const feature = items.find((item: Feature) => item.name === featureName);
