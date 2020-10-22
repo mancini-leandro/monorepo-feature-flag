@@ -1,9 +1,7 @@
 
 # Feature Flag
 
-Um módulo que permite controlar quando você lança novos recursos em seu aplicativo, colocando-os atrás de sinalizadores / interruptores de recursos.
-
-Uma biblioteca de sinalizadores de recursos dinâmicos. Essa biblioteca oferece controle sobre a implementação e o teste de novos recursos.
+Uma biblioteca de sinalizadores de recursos dinâmicos. Essa biblioteca oferece controle sobre a implementação e o teste de novos recursos. Permite controlar quando você lança novos recursos em seu aplicativo, colocando-os atrás de sinalizadores / interruptores de recursos.
 
 A ideia por trás dos sinalizadores de recurso é que eles fornecem uma maneira de testar o novo código e acelerá-lo ao longo do tempo.
 
@@ -25,27 +23,27 @@ npm install @picpay/feature-flag
 
 ### Como inicializar a lib no seu projeto
 
-Recomenda-se inicializar a biblioteca junto com a inicialização do projeto. Se o projeto for Angular, é recomendável fazer a inicialização no arquivo **main.ts**
+Usar sinalizadores de recursos é muito fácil. Inicie o serviço diretamente para solicitar os recursos.
 
 ```typescript
-import { enableProdMode } from '@angular/core';
+import { Component } from '@angular/core';
 import { FeatureFlag } from '@picpay/feature-flag';
 
-if (environment.production) {
-	enableProdMode();
-	FeatureFlag.enableProdMode();
+@Component({
+	selector: 'app-root',
+	templateUrl: './app.component.html',
+	styleUrls: ['./app.component.scss'],
+})
+export class AppComponent {
+	constructor() {
+		FeatureFlag.init({
+			isProd: environment.production
+		});
+	}
 }
-
-platformBrowserDynamic()
-	.bootstrapModule(AppModule)
-	.catch(err  =>  console.error(err));
-
-FeatureFlag.init({
-	isProd:  environment.production
-}).catch(err  =>  console.error(err));
 ```
 
-### Flag data
+### Dados de recursos
 
 Os dados dos recursos que conduzem o serviço do sinalizador de recurso é um formato json. Abaixo está um exemplo:
 
@@ -59,7 +57,7 @@ Os dados dos recursos que conduzem o serviço do sinalizador de recurso é um fo
 <table>
 	<tr>
 		<td><b>name</b<</td>
-		<td>Um nome do recurso (visível apenas na lista de recursos)</td>
+		<td>Um nome do recurso (visível apenas nos métodos <code>getFeature()</code> e <code>getFeatures()</code>)</td>
 	</tr>
 	<tr>
 		<td><b>type</b<</td>
@@ -72,7 +70,7 @@ Os dados dos recursos que conduzem o serviço do sinalizador de recurso é um fo
 	</tr>
 	<tr>
 		<td><b>value</b<</td>
-		<td>Os valores por default são retornados todos no formato <code>string</code></td>
+		<td>Os valores por default são retornados todos no formato <code>string</code> (visível apenas nos métodos <code>getFeature()</code> e <code>getFeatures()</code>)</td>
 	</tr>
 </table>
 
@@ -80,33 +78,50 @@ Os dados dos recursos que conduzem o serviço do sinalizador de recurso é um fo
 ### Métodos disponíveis
 
 ```typescript
-isFeatureEnabled(featureName: string)
+.init(config: FFConfig)
+```
+
+Inicia o serviço de recursos.
+
+Parâmetro de entrada: `FFConfig`
+
+```typescript
+.isFeatureEnabled(featureName: string)
 ```
     
-Verifica se o recurso está habilitado ou não. Caso passe um funcionalidade que não é do tipo `boolean` irá retorna o tipo `Feature`.
+Verifica se o recurso é do tipo `boolean` e retorna um valor. Caso passe uma funcionalidade que não é do tipo `boolean` irá retorna o tipo `Feature`.
 
 Parâmetro de entrada: `string`
 Tipo de retorno: `Observable<Feature | boolean>`
 
 ```typescript
-getFeatures()
+.featureParseJSON(featureName: string)
 ```
     
-Você pode obter uma lista de recursos diretamente como um `observable`.
+Verifica se o recurso é do tipo `json` e retorna um `Object | Array`. Caso passe uma funcionalidade que não é do tipo `json` irá retorna o tipo `Feature`.
+
+Parâmetro de entrada: `string`
+Tipo de retorno: `Observable<Feature | boolean>`
+
+```typescript
+.getFeatures()
+```
+    
+Você pode obter uma lista de recursos diretamente como um `observable`. Irá retornar uma lista de recursos do tipo `Feature[]`
 
 Tipo de retorno: `Observable<Feature[]>`
 
 ```typescript
-getFeature(featureName: string)
+.getFeature(featureName: string)
 ```
     
-Você pode obter o recurso diretamente como um `observable`.
+Você pode obter o recurso diretamente como um `observable`. Irá retornar um recurso do tipo `Feature`
 
 Parâmetro de entrada: `string`
 Tipo de retorno: `Observable<Feature>`
 
 ```typescript
-reload()
+.reload()
 ```
     
 O método `reload` é usado para recarregar a lista de recursos.
@@ -123,7 +138,7 @@ import { FeatureFlag } from '@picpay/feature-flag';
 	selector: 'app-root',
 	styleUrls: ['./app.component.scss'],
 	template: `
-		<div *ngFor="let item of features | async">
+		<div *ngFor="let item of getFeatures | async">
 			<p>Nome: {{item.name}}</p>
 			<p>Tipo: {{item.type}}</p>
 			<p>Valor: {{item.value}}</p>
@@ -131,7 +146,7 @@ import { FeatureFlag } from '@picpay/feature-flag';
 	`,
 })
 export class AppComponent {
-	features = FeatureFlag.features;
+	getFeatures = FeatureFlag.getFeatures();
 }
 ```
 
@@ -145,12 +160,20 @@ import { FeatureFlag } from '@picpay/feature-flag';
 	selector: 'app-root',
 	styleUrls: ['./app.component.scss'],
 	template: `
-		<p>{{(feature_qrcode_bills | async) | json}}</p>
-		<!-- { "name": "feature_qrcode_bills", "type": "B", "value": "true" } -->
+		<p>{{feature_boolean | async | json}}</p>
+		<!-- { "name": "feature_boolean", "type": "B", "value": "true" } -->
+
+		<p>{{feature_string | async | json}}</p>
+		<!-- { "name": "feature_string", "type": "S", "value": "Parabéns! Um bolo para celebrar seu aniversário 🍰" } -->
+	
+		<p>{{feature_json | async | json}}</p>
+		<!-- { "name": "feature_json", "type": "J", "value": "{\"itens\":[{\"text\":\"Faça recargas de celular\"},{\"text\":\"Compre créditos do Uber, Steam e Level Up\"}]}" } -->
 	`,
 })
 export class AppComponent {
-	feature_qrcode_bills = FeatureFlag.getFeature('feature_qrcode_bills');
+	feature_boolean = FeatureFlag.getFeature('feature_boolean');
+	feature_string = FeatureFlag.getFeature('feature_string');
+	feature_json = FeatureFlag.getFeature('feature_json');
 }
 ```
 
@@ -164,11 +187,50 @@ import { FeatureFlag } from '@picpay/feature-flag';
 	selector: 'app-root',
 	styleUrls: ['./app.component.scss'],
 	template: `
-		<p>{{(isEnabled | async) ? 'Mostrar' : 'Ocultar'}}</p>
+		<p>{{(isFeatureEnabled | async) ? 'Mostrar' : 'Ocultar'}}</p>
+		<!-- true || false -->
 	`,
 })
 export class AppComponent {
-	isEnabled = FeatureFlag.isFeatureEnabled('feature_qrcode_bills');
+	isFeatureEnabled = FeatureFlag.isFeatureEnabled('feature_boolean');
+}
+```
+
+#####  Retornando um valor json:
+
+```typescript
+import { Component } from '@angular/core';
+import { FeatureFlag } from '@picpay/feature-flag';
+
+@Component({
+	selector: 'app-root',
+	styleUrls: ['./app.component.scss'],
+	template: `
+		<p>{{featureParseJSON | async | json}}</p>
+		<!-- { "itens": [ { "text": "Faça recargas de celular" }, { "text": "Compre créditos do Uber, Steam e Level Up" } ] } -->
+	`,
+})
+export class AppComponent {
+	featureParseJSON = FeatureFlag.featureParseJSON('feature_json');
+}
+```
+
+#####  Retornando um valor json:
+
+```typescript
+import { Component } from '@angular/core';
+import { FeatureFlag } from '@picpay/feature-flag';
+
+@Component({
+	selector: 'app-root',
+	styleUrls: ['./app.component.scss'],
+	template: `
+		<p>{{featureParseJSON | async | json}}</p>
+		<!-- { "itens": [ { "text": "Faça recargas de celular" }, { "text": "Compre créditos do Uber, Steam e Level Up" } ] } -->
+	`,
+})
+export class AppComponent {
+	featureParseJSON = FeatureFlag.featureParseJSON('feature_json');
 }
 ```
 
