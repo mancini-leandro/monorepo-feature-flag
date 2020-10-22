@@ -1,6 +1,5 @@
 import { FeatureFlag } from './feature-flag';
 import { Feature } from './models/feature.model';
-import * as fetchMock from 'fetch-mock';
 import { FFConfig } from './models/config.model';
 
 jest.useFakeTimers();
@@ -16,12 +15,6 @@ describe('Feature Flag', () => {
 
     beforeEach(() => {
         config = new FFConfig(url, 3000);
-
-        // fetchMock.mock(
-        //     '^http://localhost:1500',
-        //     JSON.stringify(mockFeature),
-        //     { method: 'POST'}
-        // );
     });
 
     afterEach(() => {
@@ -30,14 +23,6 @@ describe('Feature Flag', () => {
     
     it('should be created', () => {
         expect(FeatureFlag).toBeDefined();
-    });
-
-    it('should have a init function with invalid parameters', async () => {
-        // expect(FeatureFlag.init(config)).rejects.toThrow('url was not provided.');
-
-        // await expect(FeatureFlag.init(config).rejects.toThrow(
-        //     'url was not provided.',
-        // ));
     });
 
     it('should have a init function internal default', async () => {
