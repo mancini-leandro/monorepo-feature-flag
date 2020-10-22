@@ -8,8 +8,22 @@ import { FeatureFlag } from '@picpay-myapp/packages/feature-flag';
 })
 export class AppComponent {
   title = 'Feature Flags';
-  features = FeatureFlag.features;
-  feature_qrcode_bills = FeatureFlag.getFeature('feature_qrcode_bills');
-  isEnabled = FeatureFlag.isFeatureEnabled('feature_qrcode_bills');
-  feature_cpf_in_use_dialog = FeatureFlag.getFeature('feature_cpf_in_use_dialog');
+
+  getFeatures = FeatureFlag.getFeatures();
+  featureParseJSON = FeatureFlag.featureParseJSON('feature_onboarding_carousel');
+  isFeatureEnabled = FeatureFlag.isFeatureEnabled('feature_qrcode_bills');
+  feature_boolean = FeatureFlag.getFeature('feature_qrcode_bills');
+  feature_string  = FeatureFlag.getFeature('feature_birthday_gift_message_3');
+  feature_json  = FeatureFlag.getFeature('feature_onboarding_carousel');
+
+  constructor() {
+    FeatureFlag.init({
+      url: 'http://localhost:1500/flags/features',
+      interval: 10000
+    });
+  }
+
+  reload() {
+    FeatureFlag.reload();
+  }
 }

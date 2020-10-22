@@ -1,34 +1,69 @@
-import { FFConfig } from './models/feature-flag-config.model';
+import { FFConfig } from './models/config.model';
 import { Feature } from './models/feature.model';
-import { Observable, Observer, Subject, timer } from 'rxjs';
+import { Observable, Subject, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 class FeatureFlagClass {
-  public features: Observable<Feature[]>;
   private config: FFConfig;
-  public data$: Subject<Feature[]> = new Subject();
+  private subject = new Subject<Feature[]>();
 
-  /**
-   * Initialization
-   * @param {FFConfig} config
-   */
-  async init(config: FFConfig): Promise<void> {
+  init(config: FFConfig) {
     if (!config.url) {
       throw new Error('url was not provided.');
     }
 
-    this.config = config;
+    this.config = new FFConfig(
+      config.url,
+      config.interval ? config.interval : 3000
+    );
 
-    this.features = this.getFeatures();
+    this.fetchFeatures();
   }
 
-  /**
-   * Get a list of feature names
-   * @param {String} featureName
-   * @return {Feature[]}
-   */
-  isFeatureEnabled(featureName: string): Observable<Feature | boolean> {
-    return this.data$.pipe(
+  fetchFeatures() {
+    timer(0, this.config.interval).subscribe(() => {
+      this.fetchRequest();
+    });
+  }
+
+  fetchRequest() {
+    const apiUrl = this.config.url;
+
+    fetch(apiUrl, {
+      method: 'post',
+      body: JSON.stringify({}),
+    })
+    .then(this.handleErrors)
+    .then((response: Response) => response.json())
+    .then((response: Feature[]) => {
+      this.sendFeatures(response);
+    })
+    .catch((err) => this.subject.error(err));
+  }
+
+  sendFeatures(features: Feature[]) {
+    this.subject.next(features);
+  }
+  
+  clearFeatures() {
+    this.subject.next();
+  }
+
+  getFeatures(): Observable<Feature[]> {
+    return this.subject.asObservable();
+  }
+
+  getFeature(featureName: string): Observable<Feature> {
+    return this.subject.pipe(
+      map(items => {
+        const feature = items.find((item: Feature) => item.name === featureName);
+        return feature;
+      })
+    )
+  }
+
+  isFeatureEnabled(featureName: string): Observable<Feature> {
+    return this.subject.pipe(
       map(items => {
         const feature = items.find((item: Feature) => item.name === featureName);
 
@@ -41,42 +76,22 @@ class FeatureFlagClass {
     );
   }
 
-  /**
-   * Get a list of feature names
-   * @param {String} featureName
-   * @return {Feature[]}
-   */
-  getFeatures(): Observable<Feature[]> {
-    return new Observable<Feature[]>((observer: Observer<Feature[]>) => {
-      timer(0, 5000).subscribe(() => {
-        this.fetchFeature();
-      });
-    });
-  }
-
-  getFeature(featureName: string): Observable<Feature> {
-    return this.data$.pipe(
+  featureParseJSON(featureName: string): Observable<Feature> {
+    return this.subject.pipe(
       map(items => {
         const feature = items.find((item: Feature) => item.name === featureName);
+
+        if (feature.type === 'J') {
+          return JSON.parse(feature.value);
+        }
+
         return feature;
       })
     );
   }
 
-  fetchFeature(): Promise<void | Feature[]> {
-    const apiUrl = this.config.url;
-
-    return fetch(apiUrl, {
-      method: 'post',
-      body: JSON.stringify({}),
-    })
-    .then(this.handleErrors)
-    .then((response: Response) => response.json())
-    .then((response: Feature[]) => {
-      this.data$.next(response);
-      return response;
-    })
-    .catch((err) => this.data$.error(err));
+  reload() {
+    this.fetchRequest();
   }
 
   private handleErrors(response: Response) {

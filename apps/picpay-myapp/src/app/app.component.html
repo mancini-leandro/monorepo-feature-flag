@@ -7,20 +7,26 @@
   <h1>Welcome to {{ title }}!</h1>
 </header>
 <main>
-  <h2>Feature</h2>
-  <details>
-    <summary>{{(feature_qrcode_bills | async) | json}}</summary>
-  </details>
+  <button type="button" (click)="reload()">Reload</button>
 
-  <details>
-    <summary>{{(feature_cpf_in_use_dialog | async) | json}}</summary>
-  </details>
+  <h2>Feature enabled</h2>
+  <p>{{isFeatureEnabled | async | json}}</p>
 
-  {{(isEnabled | async) | json}}
+  <h2>Feature parse JSON</h2>
+  <p>{{featureParseJSON | async | json}}</p>
+
+  <h2>Feature boolean</h2>
+  <p>{{feature_boolean | async | json}}</p>
+
+  <h2>Feature string</h2>
+  <p>{{feature_string | async | json}}</p>
+
+  <h2>Feature JSON</h2>
+  <p>{{feature_json | async | json}}</p>
 
   <h2>Features</h2>
-  <details *ngFor="let item of features | async">
-    <summary>{{item.name}} - {{item.value}} </summary>
+  <details *ngFor="let item of getFeatures | async">
+    <summary>{{item.name}}</summary>
     <pre>
 # Tipo
 {{item.type}}
