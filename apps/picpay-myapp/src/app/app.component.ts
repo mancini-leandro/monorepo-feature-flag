@@ -14,7 +14,7 @@ export class AppComponent {
   isFeatureEnabled = FeatureFlag.isFeatureEnabled('feature_qrcode_bills');
   feature_boolean = FeatureFlag.getFeature('feature_qrcode_bills');
   feature_string  = FeatureFlag.getFeature('feature_birthday_gift_message_3');
-  feature_json  = FeatureFlag.getFeature('feature_onboarding_carousel');
+  feature_json  = FeatureFlag.getFeature('teste');
 
   constructor() {
     FeatureFlag.init({

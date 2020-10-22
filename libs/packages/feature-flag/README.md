@@ -143,6 +143,15 @@ import { FeatureFlag } from '@picpay/feature-flag';
 			<p>Tipo: {{item.type}}</p>
 			<p>Valor: {{item.value}}</p>
 		</div>
+		
+		<p>{{getFeatures | async | json}}</p>
+		<!--
+		[
+			{ name: 'feature_boolean', type: 'B', value: 'true' },
+			{ name: 'feature_string', type: 'S', value: 'stringText' },
+			{ name: 'feature_json', type: 'J', value: '{"teste":123}' }
+		]
+		-->
 	`,
 })
 export class AppComponent {
