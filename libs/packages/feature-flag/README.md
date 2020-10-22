@@ -234,6 +234,9 @@ export class AppComponent {
 }
 ```
 
+### packages-feature-flag
+
+This library was generated with [Nx](https://nx.dev).
 
 ### Executando testes unitários
 
