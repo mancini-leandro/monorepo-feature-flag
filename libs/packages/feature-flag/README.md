@@ -12,13 +12,13 @@ A ideia por trás dos sinalizadores de recurso é que eles fornecem uma maneira 
 Se seu projeto já está dentro do monorepo, basta importar o FeatureFlag onde precisar.
 
 ```typescript
-import { FeatureFlag } from '@picpay/feature-flag';
+import { FeatureFlag } from '@packages/feature-flag';
 ```
 
 Caso seu projeto esteja fora do monorepo, instale a biblioteca via npm.
 
 ```typescript
-npm install @picpay/feature-flag
+npm install @packages/feature-flag
 ```
 
 ### Como inicializar a lib no seu projeto
@@ -27,7 +27,7 @@ Usar sinalizadores de recursos é muito fácil. Inicie o serviço diretamente pa
 
 ```typescript
 import { Component } from '@angular/core';
-import { FeatureFlag } from '@picpay/feature-flag';
+import { FeatureFlag } from '@packages/feature-flag';
 
 @Component({
 	selector: 'app-root',
@@ -132,7 +132,7 @@ O método `reload` é usado para recarregar a lista de recursos.
 
 ```typescript
 import { Component } from '@angular/core';
-import { FeatureFlag } from '@picpay/feature-flag';
+import { FeatureFlag } from '@packages/feature-flag';
 
 @Component({
 	selector: 'app-root',
@@ -163,7 +163,7 @@ export class AppComponent {
 
 ```typescript
 import { Component } from '@angular/core';
-import { FeatureFlag } from '@picpay/feature-flag';
+import { FeatureFlag } from '@packages/feature-flag';
 
 @Component({
 	selector: 'app-root',
@@ -190,7 +190,7 @@ export class AppComponent {
 
 ```typescript
 import { Component } from '@angular/core';
-import { FeatureFlag } from '@picpay/feature-flag';
+import { FeatureFlag } from '@packages/feature-flag';
 
 @Component({
 	selector: 'app-root',
@@ -209,7 +209,7 @@ export class AppComponent {
 
 ```typescript
 import { Component } from '@angular/core';
-import { FeatureFlag } from '@picpay/feature-flag';
+import { FeatureFlag } from '@packages/feature-flag';
 
 @Component({
 	selector: 'app-root',
@@ -228,7 +228,7 @@ export class AppComponent {
 
 ```typescript
 import { Component } from '@angular/core';
-import { FeatureFlag } from '@picpay/feature-flag';
+import { FeatureFlag } from '@packages/feature-flag';
 
 @Component({
 	selector: 'app-root',

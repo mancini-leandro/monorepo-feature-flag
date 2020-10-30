@@ -16,7 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@picpay-myapp/packages/feature-flag": [
+      "@packages/feature-flag": [
         "libs/packages/feature-flag/src/index.ts"
       ]
     }

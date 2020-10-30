@@ -6,6 +6,8 @@ import { map } from 'rxjs/operators';
 class FeatureFlagClass {
   config: FFConfig;
   subject = new Subject<Feature[]>();
+  controller = new AbortController();
+  signal = this.controller.signal;
 
   init(config: FFConfig) {
     if (!config.url) {
@@ -26,12 +28,13 @@ class FeatureFlagClass {
     });
   }
 
-  fetchRequest(): Promise<any> {
+  fetchRequest() {
     const apiUrl = this.config.url;
 
-    return fetch(apiUrl, {
+    fetch(apiUrl, {
       method: 'post',
       body: JSON.stringify({}),
+      signal: this.signal
     })
     .then(this.handleErrors)
     .then((response: Response) => response.json())
@@ -93,6 +96,10 @@ class FeatureFlagClass {
   }
 
   reload() {
+    this.controller.abort();
+    this.controller = new AbortController();
+    this.signal = this.controller.signal;
+
     this.fetchRequest();
   }
 

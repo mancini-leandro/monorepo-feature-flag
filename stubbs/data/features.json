@@ -2,7 +2,7 @@
   {
      "name":"feature_qrcode_bills",
      "type":"B",
-     "value":"false"
+     "value":"true"
   },
   {
      "name":"feature_feed_scroll_send_event",

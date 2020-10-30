@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FeatureFlag } from '@picpay-myapp/packages/feature-flag';
+import { FeatureFlag } from '@packages/feature-flag';
 
 @Component({
   selector: 'picpay-myapp-root',
@@ -19,7 +19,7 @@ export class AppComponent {
   constructor() {
     FeatureFlag.init({
       url: 'http://localhost:1500/flags/features',
-      interval: 10000
+      interval: 2000
     });
   }
 
